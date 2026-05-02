@@ -3,78 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Locomotive Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>LocoManager — Railway Equipment Tracking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar glass-panel">
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
             <div class="logo">
-                <i class="fa-solid fa-train"></i>
-                <h2>LocoManager</h2>
+                <div class="logo-icon"><i class="fa-solid fa-train" style="color:white;font-size:13px;"></i></div>
+                <div>
+                    <h2>LocoManager</h2>
+                    <p>Equipment Tracking</p>
+                </div>
             </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Overview</div>
             <ul class="nav-links">
                 <li><a href="#" class="active" data-target="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
                 <li><a href="#" data-target="equip-master"><i class="fa-solid fa-boxes-stacked"></i> Equipment Master</a></li>
                 <li><a href="#" data-target="equip-search"><i class="fa-solid fa-magnifying-glass"></i> History Search</a></li>
                 <li><a href="#" data-target="overhauls"><i class="fa-regular fa-bell"></i> Overhauls Due</a></li>
-                <hr class="nav-divider">
-                <li><a href="#" data-target="fitment"><i class="fa-solid fa-wrench"></i> Fit Equipment</a></li>
-                <li><a href="#" data-target="add-equip"><i class="fa-solid fa-plus"></i> Add Equipment</a></li>
             </ul>
-        </nav>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            
-            <!-- Dashboard View -->
-            <div id="dashboard" class="view active-view">
-                <div class="header-section text-center">
-                    <h1 class="glow-text">Locomotive Dashboard</h1>
-                    <p>Enter a loco number to view complete status, equipment, and history.</p>
-                </div>
-                
-                <div class="search-hero">
-                    <div class="search-bar glass-card">
-                        <i class="fa-solid fa-train-subway"></i>
-                        <input type="text" id="loco-search-input" placeholder="Enter Loco No (e.g. 22292)">
-                        <button id="btn-loco-search" class="btn-primary glow-btn">Check Status</button>
-                    </div>
-                </div>
+        <hr class="nav-divider">
 
-                <div id="loco-status-container" style="display: none;">
-                    <div class="glass-card mb-4" id="loco-info-card"></div>
-                    <div class="dashboard-grid">
-                        <div class="glass-card">
-                            <h3><i class="fa-solid fa-microchip"></i> Fitted Equipment</h3>
-                            <div class="accordion" id="equipment-accordion"></div>
+        <div class="nav-section">
+            <div class="nav-section-label">Operations</div>
+            <ul class="nav-links">
+                <li><a href="#" data-target="fitment"><i class="fa-solid fa-wrench"></i> Fit Equipment</a></li>
+                <li><a href="#" data-target="add-equip"><i class="fa-solid fa-circle-plus"></i> Add Equipment</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">TKD Loco Division &bull; 2026</div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="dashboard" class="view active-view">
+            <div class="page-header">
+                <div class="page-title">Locomotive Dashboard</div>
+                <div class="page-subtitle">Search any locomotive to view status, fitted equipment, and message history</div>
+            </div>
+            <div class="page-body">
+                <div class="search-container">
+                    <div class="search-row">
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="loco-search-input" placeholder="Enter Loco No (e.g. 22292)">
                         </div>
-                        <div class="glass-card">
-                            <h3><i class="fa-solid fa-message"></i> Recent Messages</h3>
-                            <div class="table-responsive">
-                                <table class="glass-table" id="messages-table">
-                                    <thead><tr><th>Date</th><th>Message</th><th>User</th></tr></thead>
+                        <button id="btn-loco-search" class="btn-primary">
+                            <i class="fa-solid fa-arrow-right"></i> Check Status
+                        </button>
+                    </div>
+                    <div id="loco-error" class="alert alert-error mt-3"></div>
+                </div>
+
+                <div id="loco-status-container" style="display:none;">
+                    <div id="loco-info-card" class="loco-header"></div>
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class="fa-solid fa-microchip"></i> Fitted Equipment</span>
+                            </div>
+                            <div class="card-body" style="padding:10px;">
+                                <div class="acc-list" id="equipment-accordion"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class="fa-solid fa-message"></i> Recent Messages</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="data-table msg-table" id="messages-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Message</th>
+                                            <th>User</th>
+                                        </tr>
+                                    </thead>
                                     <tbody></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="loco-error" class="form-msg error" style="display: none; margin-top: 1rem;"></div>
             </div>
+        </div>
 
-            <!-- Equipment Master Inventory View -->
-            <div id="equip-master" class="view">
-                <div class="header-section">
-                    <h1>Equipment Master</h1>
-                    <p>Interactive inventory management. Filter, fit, and remove equipment.</p>
-                </div>
-                
-                <!-- Tabs -->
-                <div class="tabs-header" id="eq-tabs">
+        <!-- ===== EQUIPMENT MASTER ===== -->
+        <div id="equip-master" class="view">
+            <div class="page-header">
+                <div class="page-title">Equipment Master</div>
+                <div class="page-subtitle">Full inventory — filter by type and status, fit or remove equipment inline</div>
+            </div>
+            <div class="page-body">
+                <div class="tabs" id="eq-tabs">
                     <button class="tab-btn active" data-type="MPH">MPH</button>
                     <button class="tab-btn" data-type="PANTO">PANTO</button>
                     <button class="tab-btn" data-type="GR">GR</button>
@@ -82,22 +118,23 @@
                     <button class="tab-btn" data-type="TRANSFORMER">TRANSFORMER</button>
                     <button class="tab-btn" data-type="MVRH">MVRH</button>
                 </div>
-
-                <!-- Filters & Table -->
-                <div class="glass-card">
-                    <div class="filter-bar">
-                        <label for="eq-status-filter" style="font-weight: 600;">Filter Status:</label>
-                        <select id="eq-status-filter">
-                            <option value="ALL">ALL EQUIPMENT</option>
-                            <option value="FITTED">IN SERVICE (Fitted)</option>
-                            <option value="STORAGE">STORAGE</option>
-                            <option value="UNDER_REPAIR">UNDER OVERHAULING</option>
+                <div class="card">
+                    <div class="toolbar">
+                        <span style="font-size:12px;color:var(--text-2);font-weight:600;">Filter:</span>
+                        <select id="eq-status-filter" style="width:auto;min-width:170px;">
+                            <option value="ALL">All Equipment</option>
+                            <option value="FITTED">In Service (Fitted)</option>
+                            <option value="STORAGE">In Storage</option>
+                            <option value="UNDER_REPAIR">Under Overhauling</option>
                         </select>
-                        <button id="btn-refresh-master" class="btn-secondary" style="margin-left:auto;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        <div class="toolbar-right">
+                            <button id="btn-refresh-master" class="btn-secondary btn-sm">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="table-responsive">
-                        <table class="glass-table" id="master-table">
+                    <div class="table-wrap">
+                        <table class="data-table" id="master-table">
                             <thead>
                                 <tr>
                                     <th>Serial No (MFG)</th>
@@ -109,209 +146,261 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Populated by JS -->
+                                <tr><td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-boxes-stacked"></i>
+                                        <p>Click Refresh to load inventory</p>
+                                    </div>
+                                </td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Equipment Search View -->
-            <div id="equip-search" class="view">
-                <div class="header-section">
-                    <h1>History Search</h1>
-                    <p>Search for specific equipment history by serial number.</p>
-                </div>
-                <div class="glass-card">
-                    <div class="input-group">
-                        <input type="text" id="equip-search-input" placeholder="Enter Serial No (MFG or LOC)">
-                        <button id="btn-equip-search" class="btn-primary">Search</button>
+        <!-- ===== HISTORY SEARCH ===== -->
+        <div id="equip-search" class="view">
+            <div class="page-header">
+                <div class="page-title">History Search</div>
+                <div class="page-subtitle">Search equipment history by MFG or LOC serial number</div>
+            </div>
+            <div class="page-body">
+                <div class="search-container">
+                    <div class="search-row">
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-barcode"></i>
+                            <input type="text" id="equip-search-input" placeholder="Enter Serial No (MFG or LOC)">
+                        </div>
+                        <button id="btn-equip-search" class="btn-primary">
+                            <i class="fa-solid fa-search"></i> Search
+                        </button>
                     </div>
-                    <div id="equip-status-result" class="result-box"></div>
+                </div>
+                <div id="equip-status-result" class="result-box" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ===== OVERHAULS DUE ===== -->
+        <div id="overhauls" class="view">
+            <div class="page-header">
+                <div class="page-title">Upcoming Overhauls</div>
+                <div class="page-subtitle">Equipment due for overhaul within the selected timeframe</div>
+            </div>
+            <div class="page-body">
+                <div class="d-flex gap-2 align-center mb-3">
+                    <select id="overhaul-days" style="width:auto;min-width:160px;">
+                        <option value="30">Next 30 days</option>
+                        <option value="60">Next 60 days</option>
+                        <option value="90">Next 90 days</option>
+                        <option value="180">Next 180 days</option>
+                    </select>
+                    <button id="btn-load-overhauls" class="btn-primary btn-sm">
+                        <i class="fa-solid fa-rotate-right"></i> Load
+                    </button>
+                </div>
+                <div id="overhauls-result"></div>
+            </div>
+        </div>
+
+        <!-- ===== FIT EQUIPMENT ===== -->
+        <div id="fitment" class="view">
+            <div class="page-header">
+                <div class="page-title">Fit Equipment</div>
+                <div class="page-subtitle">Log equipment fitment onto a locomotive via AI-assisted parsing</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <div class="step-box">
+                    <div class="step-box-header">
+                        <div class="step-num">1</div>
+                        <h3>Paste Fitment Message for AI Extraction</h3>
+                    </div>
+                    <div class="step-box-body">
+                        <textarea id="ai-fitment-text" placeholder="e.g. Fitted MPH serial 1234 on loco 30303 make ABB date 12-04-2026"></textarea>
+                        <div>
+                            <button id="btn-parse-fitment" class="btn-ai">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Extract with AI
+                            </button>
+                        </div>
+                        <div id="ai-fitment-error" class="alert alert-error"></div>
+                    </div>
+                </div>
+
+                <div class="step-box" id="fitment-step2" style="display:none;">
+                    <div class="step-box-header">
+                        <div class="step-num">2</div>
+                        <h3>Verify Details &amp; Submit</h3>
+                    </div>
+                    <div class="step-box-body">
+                        <form id="form-fitment">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Loco No *</label>
+                                    <input type="text" name="loco_no" id="f_loco_no" required placeholder="e.g. 30303">
+                                </div>
+                                <div class="form-group">
+                                    <label>Equipment Type *</label>
+                                    <select name="equipment_type" id="f_equipment_type" required>
+                                        <option value="MPH">MPH</option>
+                                        <option value="MVRH">MVRH</option>
+                                        <option value="PANTO">PANTO</option>
+                                        <option value="GR">GR</option>
+                                        <option value="SMGR">SMGR</option>
+                                        <option value="TRANSFORMER">TRANSFORMER</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Serial No *</label>
+                                    <input type="text" name="serial_no" id="f_serial_no" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fitment Date</label>
+                                    <input type="text" name="date" id="f_date" placeholder="DD-MM-YYYY">
+                                </div>
+                                <div class="form-group">
+                                    <label>Make</label>
+                                    <input type="text" name="make" id="f_make">
+                                </div>
+                                <div class="form-group">
+                                    <label>LOC Serial (e.g. Tkd/2026/05)</label>
+                                    <input type="text" name="loc_serial" id="f_loc_serial">
+                                </div>
+                                <div class="form-group span-2">
+                                    <label>Remarks</label>
+                                    <input type="text" name="remarks" id="f_remarks">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full btn-lg mt-3">
+                                <i class="fa-solid fa-check"></i> Confirm &amp; Submit Fitment
+                            </button>
+                        </form>
+                        <div id="fitment-msg" class="form-msg"></div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Upcoming Overhauls View -->
-            <div id="overhauls" class="view">
-                <div class="header-section">
-                    <h1>Upcoming Overhauls</h1>
-                    <p>Equipment due for overhaul in the next 30 days.</p>
+        <!-- ===== ADD EQUIPMENT ===== -->
+        <div id="add-equip" class="view">
+            <div class="page-header">
+                <div class="page-title">Add Equipment</div>
+                <div class="page-subtitle">Register new or returning equipment into Storage or Overhauling</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <div class="step-box">
+                    <div class="step-box-header">
+                        <div class="step-num">1</div>
+                        <h3>Paste Message for AI Extraction</h3>
+                    </div>
+                    <div class="step-box-body">
+                        <textarea id="ai-add-text" placeholder="e.g. Received PANTO serial 999 from IOH today make Schunk"></textarea>
+                        <div>
+                            <button id="btn-parse-add" class="btn-ai">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Extract with AI
+                            </button>
+                        </div>
+                        <div id="ai-add-error" class="alert alert-error"></div>
+                    </div>
                 </div>
-                <div class="glass-card wide-card">
-                    <button id="btn-load-overhauls" class="btn-secondary mb-4"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
-                    <div id="overhauls-result" class="result-box"></div>
+
+                <div class="step-box" id="add-step2" style="display:none;">
+                    <div class="step-box-header">
+                        <div class="step-num">2</div>
+                        <h3>Verify Status &amp; Submit</h3>
+                    </div>
+                    <div class="step-box-body">
+                        <form id="form-add">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Equipment Type *</label>
+                                    <select name="equipment_type" id="a_equipment_type" required>
+                                        <option value="MPH">MPH</option>
+                                        <option value="MVRH">MVRH</option>
+                                        <option value="PANTO">PANTO</option>
+                                        <option value="GR">GR</option>
+                                        <option value="SMGR">SMGR</option>
+                                        <option value="TRANSFORMER">TRANSFORMER</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Serial No *</label>
+                                    <input type="text" name="serial_no" id="a_serial_no" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select name="status" id="a_status" required>
+                                        <option value="STORAGE">STORAGE — Ready to fit</option>
+                                        <option value="UNDER_REPAIR">UNDER OVERHAULING</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mfg Date</label>
+                                    <input type="text" name="mfg_date" id="a_mfg_date" placeholder="DD-MM-YYYY or MM/YYYY">
+                                </div>
+                                <div class="form-group span-2">
+                                    <label>Remarks</label>
+                                    <input type="text" name="remarks" id="a_remarks">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full btn-lg mt-3">
+                                <i class="fa-solid fa-plus"></i> Add to Inventory
+                            </button>
+                        </form>
+                        <div id="add-msg" class="form-msg"></div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Fitment View (AI Powered) -->
-            <div id="fitment" class="view">
-                <div class="header-section">
-                    <h1>Fit Equipment</h1>
-                    <p>Log equipment fitted onto a locomotive via AI parsing.</p>
-                </div>
-                
-                <!-- STEP 1: AI Parsing -->
-                <div class="ai-entry-box">
-                    <div class="step-header">
-                        <div class="step-badge">1</div>
-                        <h3>Paste Message for AI Parsing</h3>
-                    </div>
-                    <textarea id="ai-fitment-text" placeholder="e.g. Fitted MPH 1234 on loco 30303 today make ABB"></textarea>
-                    <button id="btn-parse-fitment" class="btn-ai"><i class="fa-solid fa-wand-magic-sparkles"></i> Extract Data</button>
-                    <div id="ai-fitment-error" class="form-msg error"></div>
-                </div>
+    </main>
+</div>
 
-                <!-- STEP 2: Verification Form -->
-                <div class="glass-card form-container" id="fitment-step2" style="display: none;">
-                    <div class="step-header">
-                        <div class="step-badge">2</div>
-                        <h3>Verify & Submit</h3>
-                    </div>
-                    <form id="form-fitment">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Loco No *</label>
-                                <input type="text" name="loco_no" id="f_loco_no" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Equipment Type *</label>
-                                <select name="equipment_type" id="f_equipment_type" required>
-                                    <option value="MPH">MPH</option>
-                                    <option value="MVRH">MVRH</option>
-                                    <option value="PANTO">PANTO</option>
-                                    <option value="GR">GR</option>
-                                    <option value="SMGR">SMGR</option>
-                                    <option value="TRANSFORMER">TRANSFORMER</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Serial No *</label>
-                                <input type="text" name="serial_no" id="f_serial_no" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Fitment Date</label>
-                                <input type="text" name="date" id="f_date" placeholder="DD-MM-YYYY">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Make</label>
-                                <input type="text" name="make" id="f_make">
-                            </div>
-                            <div class="form-group">
-                                <label>Loc Serial (Tkd/...)</label>
-                                <input type="text" name="loc_serial" id="f_loc_serial">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Remarks / Original Message</label>
-                            <input type="text" name="remarks" id="f_remarks">
-                        </div>
-                        <button type="submit" class="btn-primary form-submit"><i class="fa-solid fa-check"></i> Final Submit</button>
-                    </form>
-                    <div id="fitment-msg" class="form-msg"></div>
-                </div>
+<!-- MODAL: Remove Equipment -->
+<div class="modal-backdrop" id="modal-remove">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Remove Equipment</h3>
+            <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-info">
+                <strong id="rm-eq-display">—</strong>
+                <span>Loco: <span id="rm-loco-no" style="color:var(--accent);font-weight:700;"></span></span>
             </div>
-
-            <!-- Add Equipment View (AI Powered) -->
-            <div id="add-equip" class="view">
-                <div class="header-section">
-                    <h1>Add Equipment</h1>
-                    <p>Log equipment arriving in Storage or Under Overhauling via AI.</p>
-                </div>
-                
-                <!-- STEP 1: AI Parsing -->
-                <div class="ai-entry-box">
-                    <div class="step-header">
-                        <div class="step-badge">1</div>
-                        <h3>Paste Message for AI Parsing</h3>
-                    </div>
-                    <textarea id="ai-add-text" placeholder="e.g. Received PANTO 999 from IOH today"></textarea>
-                    <button id="btn-parse-add" class="btn-ai"><i class="fa-solid fa-wand-magic-sparkles"></i> Extract Data</button>
-                    <div id="ai-add-error" class="form-msg error"></div>
-                </div>
-
-                <!-- STEP 2: Verification Form -->
-                <div class="glass-card form-container" id="add-step2" style="display: none;">
-                    <div class="step-header">
-                        <div class="step-badge">2</div>
-                        <h3>Verify Status & Submit</h3>
-                    </div>
-                    <form id="form-add">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Equipment Type *</label>
-                                <select name="equipment_type" id="a_equipment_type" required>
-                                    <option value="MPH">MPH</option>
-                                    <option value="MVRH">MVRH</option>
-                                    <option value="PANTO">PANTO</option>
-                                    <option value="GR">GR</option>
-                                    <option value="SMGR">SMGR</option>
-                                    <option value="TRANSFORMER">TRANSFORMER</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Serial No *</label>
-                                <input type="text" name="serial_no" id="a_serial_no" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Target Status *</label>
-                                <select name="status" id="a_status" required style="border-color: var(--accent-color);">
-                                    <option value="STORAGE">STORAGE (Ready to fit)</option>
-                                    <option value="UNDER_REPAIR">UNDER OVERHAULING (Needs work)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Mfg Date</label>
-                                <input type="text" name="mfg_date" id="a_mfg_date" placeholder="DD-MM-YYYY">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Remarks</label>
-                            <input type="text" name="remarks" id="a_remarks">
-                        </div>
-                        <button type="submit" class="btn-primary form-submit"><i class="fa-solid fa-plus"></i> Final Submit</button>
-                    </form>
-                    <div id="add-msg" class="form-msg"></div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- MODAL: Remove Equipment -->
-    <div class="modal-overlay" id="modal-remove">
-        <div class="modal-content">
-            <div class="modal-header">Remove Equipment</div>
-            <p style="margin-bottom: 1rem; color: var(--text-secondary);">You are removing <strong id="rm-eq-type" class="text-primary"></strong> (Serial <strong id="rm-eq-serial"></strong>) from Loco <strong id="rm-loco-no"></strong>.</p>
             <div class="form-group">
                 <label>Removal Date</label>
                 <input type="text" id="rm-date" placeholder="DD-MM-YYYY">
             </div>
             <div class="form-group">
-                <label>Overhaul Type (e.g. IOH, POH)</label>
-                <input type="text" id="rm-oh" placeholder="IOH">
+                <label>Overhaul Type</label>
+                <input type="text" id="rm-oh" placeholder="IOH / POH / TOH1 …">
             </div>
             <div class="form-group">
                 <label>Remarks</label>
-                <input type="text" id="rm-remarks">
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModals()">Cancel</button>
-                <button class="btn-danger" id="btn-submit-remove">Confirm Removal</button>
+                <input type="text" id="rm-remarks" placeholder="Optional">
             </div>
         </div>
+        <div class="modal-foot">
+            <button class="btn-secondary" onclick="closeModals()">Cancel</button>
+            <button class="btn-danger" id="btn-submit-remove">
+                <i class="fa-solid fa-eject"></i> Confirm Removal
+            </button>
+        </div>
     </div>
+</div>
 
-    <!-- MODAL: Fit Equipment -->
-    <div class="modal-overlay" id="modal-fit">
-        <div class="modal-content">
-            <div class="modal-header">Fit Equipment</div>
-            <p style="margin-bottom: 1rem; color: var(--text-secondary);">You are fitting <strong id="fit-eq-type" class="text-primary"></strong> (Serial <strong id="fit-eq-serial"></strong>) to a locomotive.</p>
+<!-- MODAL: Fit Equipment -->
+<div class="modal-backdrop" id="modal-fit">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Fit Equipment</h3>
+            <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-info">
+                <strong id="fit-eq-display">—</strong>
+                <span>Enter the target locomotive number below</span>
+            </div>
             <div class="form-group">
                 <label>Target Loco No *</label>
                 <input type="text" id="fit-loco" placeholder="e.g. 22292" required>
@@ -322,18 +411,18 @@
             </div>
             <div class="form-group">
                 <label>Remarks</label>
-                <input type="text" id="fit-remarks">
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModals()">Cancel</button>
-                <button class="btn-success" id="btn-submit-fit">Confirm Fitment</button>
+                <input type="text" id="fit-remarks" placeholder="Optional">
             </div>
         </div>
+        <div class="modal-foot">
+            <button class="btn-secondary" onclick="closeModals()">Cancel</button>
+            <button class="btn-success" id="btn-submit-fit">
+                <i class="fa-solid fa-wrench"></i> Confirm Fitment
+            </button>
+        </div>
     </div>
+</div>
 
-    <!-- Background Gradient Animation -->
-    <div class="bg-gradient"></div>
-
-    <script src="/static/app.js"></script>
+<script src="/static/app.js"></script>
 </body>
 </html>
