@@ -73,6 +73,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg_type = parsed.get('type')
     
     if msg_type in ['FITMENT', 'ADD_EQUIPMENT']:
+        logger.info(f"Setting pending: user_id={user_id}, msg_type={msg_type}")
         set_pending(user_id, msg_type, parsed['data'], text)
         preview = await build_preview(msg_type, parsed['data'])
         keyboard = InlineKeyboardMarkup([
@@ -112,6 +113,11 @@ async def receive_edit_value(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     
     user_id = context.user_data.get('user_id')
+    current_user_id = str(update.message.from_user.id)
+    
+    # Debug logging
+    logger.info(f"Edit mode: context_user_id={user_id}, current_user_id={current_user_id}")
+    
     if not user_id:
         await update.message.reply_text("❌ Session expired. Please send the message again.")
         context.user_data['awaiting_edit'] = False
@@ -119,6 +125,7 @@ async def receive_edit_value(update: Update, context: ContextTypes.DEFAULT_TYPE)
     
     pending = get_pending(user_id)
     if not pending:
+        logger.warning(f"No pending action found during edit for user_id={user_id}")
         await update.message.reply_text("❌ Action expired. Please send the message again.")
         context.user_data['awaiting_edit'] = False
         return

@@ -16,10 +16,18 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = parts[1]
     action = parts[0]
 
+    # Debug logging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Callback: action={action}, user_id={user_id}, callback_data={data}")
+    
     pending = get_pending(user_id)
     if not pending:
+        logger.warning(f"No pending action found for user_id={user_id}")
         await query.edit_message_text("❌ Action expired. Please send message again.")
         return
+    
+    logger.info(f"Found pending action: type={pending.type}, data_keys={list(pending.data.keys())}")
 
     if action == 'confirm':
         if pending.type == 'FITMENT':
@@ -76,6 +84,8 @@ async def edit_field_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     user_id = parts[1]
     field = '_'.join(parts[2:])
     
+    logger.info(f"Edit field: user_id={user_id}, field={field}, callback_data={query.data}")
+    
     field_mapping = {
         'loco_no': 'loco_no',
         'equipment_type': 'equipment_type',
@@ -95,9 +105,11 @@ async def edit_field_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     
     pending = get_pending(user_id)
     if not pending:
+        logger.warning(f"No pending action found for edit field, user_id={user_id}")
         await query.edit_message_text("❌ Action expired. Please send the message again.")
         return
     
+    logger.info(f"Found pending for edit: type={pending.type}, setting editing_field={actual_field}")
     pending.data['editing_field'] = actual_field
     
     await query.edit_message_text(
