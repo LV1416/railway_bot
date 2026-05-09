@@ -35,9 +35,8 @@ tg_app.add_handler(CommandHandler("report", report_command))
 tg_app.add_handler(CommandHandler("list", list_command))
 
 # Register callback query handlers (for inline buttons)
-# More specific patterns first to avoid conflicts
-tg_app.add_handler(CallbackQueryHandler(edit_field_handler, pattern='^editfield_.*'))
 tg_app.add_handler(CallbackQueryHandler(callback_handler, pattern='^(confirm|edit|cancel)_.*'))
+tg_app.add_handler(CallbackQueryHandler(edit_field_handler, pattern='^editfield_.*'))
 
 # Register text message handler
 tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
