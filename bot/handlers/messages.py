@@ -158,6 +158,4 @@ async def receive_edit_value(update: Update, context: ContextTypes.DEFAULT_TYPE)
         reply_markup=keyboard, parse_mode='Markdown'
     )
     
-    # Reset edit mode
-    context.user_data['awaiting_edit'] = False
-    context.user_data['user_id'] = None
+
