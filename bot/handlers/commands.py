@@ -10,14 +10,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Commands:\n"
+        "🛠 *Railway Equipment Bot Commands*\n\n"
+        "🏠 *General*\n"
         "/status <loco_no> - Get loco status\n"
         "/equipment <serial> - Get equipment history\n"
-        "/schedule ... - Update loco schedule\n"
-        "/addequipment ... - Add new equipment to storage\n"
-        "/report [days] - Upcoming overhauls\n"
-        "/list storage - List equipment in storage\n"
-        "\nOr just type natural language messages for fitment, removal, etc."
+        "/report [days] - Upcoming overhauls\n\n"
+        "🌀 *TSC Inventory*\n"
+        "/tsc_summary - Quick overview of counts\n"
+        "/tsc_running - List TSCs on locomotives\n"
+        "/tsc_status <loco_no> - Current & last TSC on loco\n"
+        "/tsc_available - List TSCs ready for fitment\n"
+        "/tsc_blw - Check TSCs at BLW factory\n"
+        "\n_Or just type natural language messages for fitment, removal, etc._",
+        parse_mode='Markdown'
     )
 
 async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):

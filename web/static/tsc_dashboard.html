@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSC Management — Diesel HHP Locomotive</title>
+    <meta name="description" content="Turbo Super Charger management dashboard for diesel HHP locomotives — TKD Shed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/tsc_style.css">
+</head>
+<body>
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-fan" style="color:white;font-size:14px;"></i></div>
+                <div>
+                    <h2>TSC Manager</h2>
+                    <p>Diesel HHP Locos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Overview</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-target="tsc-dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="#" data-target="tsc-loco-history"><i class="fa-solid fa-train"></i> Loco History</a></li>
+                <li><a href="#" data-target="tsc-premature"><i class="fa-solid fa-triangle-exclamation"></i> Premature Failures</a></li>
+            </ul>
+        </div>
+
+        <hr class="nav-divider">
+
+        <div class="nav-section">
+            <div class="nav-section-label">Operations</div>
+            <ul class="nav-links">
+                <li><a href="#" data-target="tsc-receive"><i class="fa-solid fa-box-open"></i> Receive TSC</a></li>
+                <li><a href="#" data-target="tsc-issue"><i class="fa-solid fa-wrench"></i> Issue / Fit TSC</a></li>
+                <li><a href="#" data-target="tsc-remove"><i class="fa-solid fa-eject"></i> Remove TSC</a></li>
+                <li><a href="#" data-target="tsc-send-blw"><i class="fa-solid fa-truck"></i> Send to BLW</a></li>
+            </ul>
+        </div>
+
+        <hr class="nav-divider">
+
+        <div class="nav-section">
+            <div class="nav-section-label">Records</div>
+            <ul class="nav-links">
+                <li><a href="#" data-target="tsc-registers"><i class="fa-solid fa-book"></i> Registers</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Main Dashboard</a>
+            <span>TKD Diesel Shed &bull; 2026</span>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="tsc-dashboard" class="view active-view">
+            <div class="page-header">
+                <div class="page-title">TSC Dashboard</div>
+                <div class="page-subtitle">Overview of all Turbo Super Chargers — receive, issue, track, maintain</div>
+            </div>
+            <div class="page-body">
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card stat-blue"><div class="stat-icon"><i class="fa-solid fa-cubes"></i></div><div class="stat-info"><div class="stat-value" id="s-total">—</div><div class="stat-label">Total TSCs</div></div></div>
+                    <div class="stat-card stat-green"><div class="stat-icon"><i class="fa-solid fa-gears"></i></div><div class="stat-info"><div class="stat-value" id="s-service">—</div><div class="stat-label">In Service</div></div></div>
+                    <div class="stat-card stat-teal"><div class="stat-icon"><i class="fa-solid fa-warehouse"></i></div><div class="stat-info"><div class="stat-value" id="s-available">—</div><div class="stat-label">Available</div></div></div>
+                    <div class="stat-card stat-orange"><div class="stat-icon"><i class="fa-solid fa-truck-ramp-box"></i></div><div class="stat-info"><div class="stat-value" id="s-waiting">—</div><div class="stat-label">Waiting Dispatch</div></div></div>
+                    <div class="stat-card stat-cyan"><div class="stat-icon"><i class="fa-solid fa-truck-fast"></i></div><div class="stat-info"><div class="stat-value" id="s-at-blw">—</div><div class="stat-label">At BLW</div></div></div>
+                    <div class="stat-card stat-purple"><div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="stat-info"><div class="stat-value" id="s-warranty">—</div><div class="stat-label">Warranty Cases</div></div></div>
+                    <div class="stat-card stat-red"><div class="stat-icon"><i class="fa-solid fa-bolt"></i></div><div class="stat-info"><div class="stat-value" id="s-premature">—</div><div class="stat-label">Premature Failures</div></div></div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="card" id="alerts-card" style="display:none;">
+                    <div class="card-header"><span class="card-title"><i class="fa-solid fa-bell"></i> Alerts & Notifications</span></div>
+                    <div class="card-body" id="alerts-body"></div>
+                </div>
+
+                <!-- Running TSCs Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fa-solid fa-train"></i> TSCs Running on Locomotives</span>
+                        <button class="btn-secondary btn-sm" id="btn-refresh-running"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="running-table">
+                            <thead>
+                                <tr>
+                                    <th>Loco No</th>
+                                    <th>Type</th>
+                                    <th>TSC No</th>
+                                    <th>Fitment Date</th>
+                                    <th>DOC</th>
+                                    <th>Age (Yr)</th>
+                                    <th>Life (Yr)</th>
+                                    <th>Remaining</th>
+                                    <th>Status</th>
+                                    <th>Warranty</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody><tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-fan"></i><p>Loading...</p></div></td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <!-- BLW Account -->
+                <div class="card">
+                    <div class="card-header"><span class="card-title"><i class="fa-solid fa-scale-balanced"></i> BLW Account</span></div>
+                    <div class="card-body">
+                        <div class="blw-summary" id="blw-summary">
+                            <div class="blw-stat"><span class="blw-num" id="blw-sent">—</span><span class="blw-label">Sent to BLW</span></div>
+                            <div class="blw-divider"><i class="fa-solid fa-minus"></i></div>
+                            <div class="blw-stat"><span class="blw-num" id="blw-recv">—</span><span class="blw-label">Received from BLW</span></div>
+                            <div class="blw-divider"><i class="fa-solid fa-equals"></i></div>
+                            <div class="blw-stat blw-balance"><span class="blw-num" id="blw-bal">—</span><span class="blw-label">Balance at BLW</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== LOCO HISTORY ===== -->
+        <div id="tsc-loco-history" class="view">
+            <div class="page-header">
+                <div class="page-title">Loco TSC History</div>
+                <div class="page-subtitle">View all TSCs ever fitted on a locomotive with age and removal reasons</div>
+            </div>
+            <div class="page-body">
+                <div class="search-container">
+                    <div class="search-row">
+                        <div class="search-input-wrap"><i class="fa-solid fa-train"></i><input type="text" id="loco-hist-input" placeholder="Enter Loco No (e.g. 40081)"></div>
+                        <button class="btn-primary" id="btn-loco-hist"><i class="fa-solid fa-search"></i> Search</button>
+                    </div>
+                </div>
+                <div id="loco-hist-result" style="display:none;">
+                    <div id="loco-hist-current" class="card"></div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Fitment History</span></div>
+                        <div class="table-wrap">
+                            <table class="data-table" id="loco-fit-table"><thead><tr><th>TSC No</th><th>Fitted</th><th>DOC</th><th>Loco Type</th><th>Cause</th><th>Remarks</th></tr></thead><tbody></tbody></table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title"><i class="fa-solid fa-arrow-right-from-bracket"></i> Removal History</span></div>
+                        <div class="table-wrap">
+                            <table class="data-table" id="loco-rem-table"><thead><tr><th>TSC No</th><th>Removed</th><th>Cause</th><th>Condition</th><th>Warranty</th><th>Remarks</th></tr></thead><tbody></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PREMATURE FAILURES ===== -->
+        <div id="tsc-premature" class="view">
+            <div class="page-header">
+                <div class="page-title">Premature Failures</div>
+                <div class="page-subtitle">TSCs that failed before their 6/8 year working life</div>
+            </div>
+            <div class="page-body">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> Premature Failure Log</span>
+                        <button class="btn-secondary btn-sm" id="btn-load-pf"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="pf-table">
+                            <thead><tr><th>Sr</th><th>TSC No</th><th>Loco</th><th>Type</th><th>Fitted</th><th>DOC</th><th>Removed</th><th>Age (Yr)</th><th>Life</th><th>Reason</th><th>Warranty</th></tr></thead>
+                            <tbody><tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-check-circle"></i><p>Click Refresh to load</p></div></td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== RECEIVE TSC ===== -->
+        <div id="tsc-receive" class="view">
+            <div class="page-header">
+                <div class="page-title">Receive TSC</div>
+                <div class="page-subtitle">Register a TSC received from BLW or another shed</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <div class="step-box">
+                    <div class="step-box-header"><div class="step-num">📥</div><h3>TSC Receive Details</h3></div>
+                    <div class="step-box-body">
+                        <form id="form-receive">
+                            <div class="form-grid">
+                                <div class="form-group"><label>TSC No *</label><input type="text" name="tsc_no" id="r_tsc_no" required placeholder="I 04 2023 03 GMR1"></div>
+                                <div class="form-group"><label>Received From *</label><input type="text" name="received_from" id="r_from" placeholder="B.L.W. / BSB"></div>
+                                <div class="form-group"><label>Received Date</label><input type="text" name="received_date" id="r_date" placeholder="DD-MM-YYYY"></div>
+                                <div class="form-group"><label>PL No</label><input type="text" name="pl_no" id="r_pl" placeholder="16080993"></div>
+                                <div class="form-group"><label>OH Type</label><select name="oh_type" id="r_oh"><option value="Overhauling">Overhauling</option><option value="Warranty">Warranty</option></select></div>
+                                <div class="form-group"><label>Letter No</label><input type="text" name="letter_no" id="r_letter"></div>
+                                <div class="form-group span-2"><label>Remarks</label><input type="text" name="remarks" id="r_remarks"></div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full btn-lg mt-3"><i class="fa-solid fa-check"></i> Register Receipt</button>
+                        </form>
+                        <div id="receive-msg" class="form-msg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ISSUE TSC ===== -->
+        <div id="tsc-issue" class="view">
+            <div class="page-header">
+                <div class="page-title">Issue / Fit TSC</div>
+                <div class="page-subtitle">Fit an available TSC onto a locomotive — DOC auto-calculated</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <!-- Available TSCs -->
+                <div class="card mb-3" id="avail-card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fa-solid fa-warehouse"></i> Available TSCs</span>
+                        <button class="btn-secondary btn-sm" id="btn-load-avail"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="avail-table">
+                            <thead>
+                                <tr>
+                                    <th>TSC No</th>
+                                    <th>Source</th>
+                                    <th>DOC</th>
+                                    <th>Age Used</th>
+                                    <th>Removed Loco</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="avail-tbody">
+                                <tr><td colspan="5"><p class="text-muted text-center">Click refresh to load available TSCs</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-box-header"><div class="step-num">🔧</div><h3>Issue Details</h3></div>
+                    <div class="step-box-body">
+                        <form id="form-issue">
+                            <div class="form-grid">
+                                <div class="form-group"><label>TSC No *</label><input type="text" name="tsc_no" id="i_tsc_no" required placeholder="I 04 2023 03 GMR1"></div>
+                                <div class="form-group"><label>Loco No *</label><input type="text" name="loco_no" id="i_loco_no" required placeholder="40081"></div>
+                                <div class="form-group"><label>Fitment Date</label><input type="text" name="issue_date" id="i_date" placeholder="DD-MM-YYYY"></div>
+                                <div class="form-group"><label>Cause of Change</label><select name="cause_of_change" id="i_cause"><option value="">— Select —</option></select></div>
+                                <div class="form-group span-2"><label>Remarks</label><input type="text" name="remarks" id="i_remarks"></div>
+                            </div>
+                            <button type="submit" class="btn-success btn-full btn-lg mt-3"><i class="fa-solid fa-wrench"></i> Confirm Fitment</button>
+                        </form>
+                        <div id="issue-msg" class="form-msg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REMOVE TSC ===== -->
+        <div id="tsc-remove" class="view">
+            <div class="page-header">
+                <div class="page-title">Remove TSC</div>
+                <div class="page-subtitle">Remove a TSC from a locomotive — warranty auto-detected</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <div class="step-box">
+                    <div class="step-box-header"><div class="step-num">🔴</div><h3>Removal Details</h3></div>
+                    <div class="step-box-body">
+                        <form id="form-remove">
+                            <div class="form-grid">
+                                <div class="form-group"><label>TSC No *</label><input type="text" name="tsc_no" id="rm_tsc_no" required placeholder="I 04 2023 03 GMR1"></div>
+                                <div class="form-group"><label>Removal Date</label><input type="text" name="removal_date" id="rm_date" placeholder="DD-MM-YYYY"></div>
+                                <div class="form-group"><label>Cause</label><select name="cause" id="rm_cause"><option value="">— Select —</option></select></div>
+                                <div class="form-group"><label>Condition</label><select name="condition" id="rm_condition"><option value="FAILED">FAILED</option><option value="GOOD">GOOD (Re-usable)</option><option value="OVERDUE">OVERDUE</option></select></div>
+                                <div class="form-group">
+                                    <label>Next Action</label>
+                                    <select name="next_action" id="rm_action">
+                                        <option value="SEND_TO_BLW">SEND TO BLW</option>
+                                        <option value="KEEP_FOR_FITMENT">KEEP FOR FUTURE FITMENT (OLD GOOD)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group span-2"><label>Remarks</label><input type="text" name="remarks" id="rm_remarks"></div>
+                            </div>
+                            <button type="submit" class="btn-danger btn-full btn-lg mt-3"><i class="fa-solid fa-eject"></i> Confirm Removal</button>
+                        </form>
+                        <div id="remove-msg" class="form-msg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SEND TO BLW ===== -->
+        <div id="tsc-send-blw" class="view">
+            <div class="page-header">
+                <div class="page-title">Send TSC to BLW</div>
+                <div class="page-subtitle">Dispatch a failed/overdue TSC to BLW for overhaul or warranty repair</div>
+            </div>
+            <div class="page-body" style="max-width:700px;">
+                <div class="step-box">
+                    <div class="step-box-header"><div class="step-num">📤</div><h3>Dispatch Details</h3></div>
+                    <div class="step-box-body">
+                        <form id="form-send-blw">
+                            <div class="form-grid">
+                                <div class="form-group"><label>TSC No *</label><input type="text" name="tsc_no" id="sb_tsc_no" required placeholder="I 04 2023 03 GMR1"></div>
+                                <div class="form-group"><label>Dispatch Date</label><input type="text" name="dispatch_date" id="sb_date" placeholder="DD-MM-YYYY"></div>
+                                <div class="form-group"><label>PL No</label><input type="text" name="pl_no" id="sb_pl"></div>
+                                <div class="form-group"><label>OH Type</label><select name="oh_type" id="sb_oh"><option value="Overhauling">Overhauling</option><option value="Warranty">Warranty</option></select></div>
+                                <div class="form-group"><label>Dispatch Letter No</label><input type="text" name="dispatch_letter_no" id="sb_letter"></div>
+                                <div class="form-group"><label>Warranty No</label><input type="text" name="warranty_no" id="sb_warranty"></div>
+                                <div class="form-group span-2"><label>Remarks</label><input type="text" name="remarks" id="sb_remarks"></div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full btn-lg mt-3"><i class="fa-solid fa-truck"></i> Confirm Dispatch</button>
+                        </form>
+                        <div id="send-blw-msg" class="form-msg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REGISTERS ===== -->
+        <div id="tsc-registers" class="view">
+            <div class="page-header">
+                <div class="page-title">Registers</div>
+                <div class="page-subtitle">View receive, issue, removal and BLW dispatch registers</div>
+            </div>
+            <div class="page-body">
+                <div class="fy-filter-section mb-3">
+                    <div class="fy-button-label text-muted small mb-2">Select Financial Year:</div>
+                    <div id="fy-filter-buttons" class="fy-btn-group">
+                        <!-- Buttons will be injected by JS -->
+                    </div>
+                </div>
+
+                <div class="toolbar mb-3">
+                    <div class="tabs" id="reg-tabs">
+                        <button class="tab-btn active" data-reg="receive">Receive</button>
+                        <button class="tab-btn" data-reg="issue">Issue</button>
+                        <button class="tab-btn" data-reg="removal">Removal</button>
+                        <button class="tab-btn" data-reg="blw_dispatch">BLW Dispatch</button>
+                        <button class="tab-btn" data-reg="waiting">Waiting Dispatch</button>
+                    </div>
+                </div>
+
+                <div id="register-summary-container" class="card" style="display: none; margin-top: 15px; width: 100%;">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fa-solid fa-chart-bar"></i> Financial Year Summary</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>FY Session</th>
+                                    <th>Warranty</th>
+                                    <th>Overhauling</th>
+                                </tr>
+                            </thead>
+                            <tbody id="register-summary-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data-table" id="reg-table">
+                            <thead id="reg-thead"><tr><th>Loading...</th></tr></thead>
+                            <tbody id="reg-tbody"><tr><td><div class="empty-state"><i class="fa-solid fa-book"></i><p>Select a register to view data</p></div></td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="/static/tsc_app.js"></script>
+</body>
+</html>
